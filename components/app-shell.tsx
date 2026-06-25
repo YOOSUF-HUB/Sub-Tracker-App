@@ -2,19 +2,20 @@ import Link from "next/link";
 import { CreditCard, LayoutDashboard, LogOut, Plus, WalletCards } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950">
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="app-container flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
           <Link href="/dashboard" className="flex items-center gap-3">
-            <span className="grid h-9 w-9 place-items-center rounded-md bg-slate-950 text-white">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-slate-950 text-white shadow-sm transition-colors duration-200 dark:bg-slate-50 dark:text-slate-950">
               <WalletCards aria-hidden="true" className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-base font-semibold">Subscription Tracker</p>
-              <p className="text-xs text-slate-500">Personal finance dashboard</p>
+              <p className="text-base font-semibold text-strong">Subscription Tracker</p>
+              <p className="text-xs muted">Personal finance dashboard</p>
             </div>
           </Link>
 
@@ -33,15 +34,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
             <ThemeToggle />
             <form action={logoutAction}>
-              <button className="nav-link" type="submit">
+              <Button className="min-h-9 px-3 py-2" type="submit" variant="ghost">
                 <LogOut aria-hidden="true" className="h-4 w-4" />
                 Logout
-              </button>
+              </Button>
             </form>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">{children}</main>
+      <main className="app-container py-8 sm:py-10">{children}</main>
     </div>
   );
 }
