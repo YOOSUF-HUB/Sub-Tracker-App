@@ -4,6 +4,7 @@ out
 dist
 coverage
 *.log
+tsconfig.tsbuildinfo
 .env
 .env.local
 .env.*.local
