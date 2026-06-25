@@ -62,13 +62,11 @@ export default async function DashboardPage() {
     .slice(0, 5);
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="page-stack">
+      <div className="page-header">
         <div>
-          <p className="text-sm font-medium text-slate-500">Overview</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-normal text-slate-950">
-            Dashboard
-          </h1>
+          <p className="eyebrow">Overview</p>
+          <h1 className="page-title">Dashboard</h1>
         </div>
         <Link className="btn-primary justify-center" href="/subscriptions/new">
           <Plus aria-hidden="true" className="h-4 w-4" />
@@ -152,19 +150,19 @@ export default async function DashboardPage() {
             <div className="space-y-3">
               {topExpensive.map((subscription, index) => (
                 <Link
-                  className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:bg-slate-50"
+                  className="card card-hover flex items-center justify-between gap-4"
                   href={`/subscriptions/${subscription.id}`}
                   key={subscription.id}
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-950">
+                    <p className="font-medium text-strong">
                       {index + 1}. {subscription.name}
                     </p>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm muted">
                       {subscription.category}
                     </p>
                   </div>
-                  <p className="font-semibold text-slate-950">
+                  <p className="font-semibold text-strong">
                     {formatCurrency(subscription.monthlyCost, currency)}
                   </p>
                 </Link>
@@ -183,15 +181,15 @@ export default async function DashboardPage() {
             <div className="divide-y divide-slate-100">
               {unusedSubscriptions.map((subscription) => (
                 <Link
-                  className="flex items-center justify-between gap-4 py-4 transition hover:bg-slate-50"
+                  className="row-link flex items-center justify-between gap-4 px-2 py-4"
                   href={`/subscriptions/${subscription.id}`}
                   key={subscription.id}
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-slate-950">
+                    <p className="truncate font-medium text-strong">
                       {subscription.name}
                     </p>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm muted">
                       {formatCurrency(subscription.price, subscription.currency)} ·{" "}
                       {subscription.category}
                     </p>
@@ -215,20 +213,20 @@ export default async function DashboardPage() {
             <div className="divide-y divide-slate-100">
               {renewals30Days.slice(0, 8).map((subscription) => (
                 <Link
-                  className="flex items-center justify-between gap-4 py-4 transition hover:bg-slate-50"
+                  className="row-link flex items-center justify-between gap-4 px-2 py-4"
                   href={`/subscriptions/${subscription.id}`}
                   key={subscription.id}
                 >
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate font-medium text-slate-950">
+                      <p className="truncate font-medium text-strong">
                         {subscription.name}
                       </p>
                       {renewals7Days.some((item) => item.id === subscription.id) ? (
                         <Badge tone="amber">Soon</Badge>
                       ) : null}
                     </div>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm muted">
                       {formatDate(subscription.nextBillingDate)} ·{" "}
                       {formatCurrency(subscription.price, subscription.currency)}
                     </p>
@@ -247,16 +245,16 @@ export default async function DashboardPage() {
             <div className="space-y-3">
               {recentlyAdded.map((subscription) => (
                 <Link
-                  className="block rounded-lg border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:bg-slate-50"
+                  className="card card-hover block"
                   href={`/subscriptions/${subscription.id}`}
                   key={subscription.id}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-slate-950">
+                      <p className="truncate font-medium text-strong">
                         {subscription.name}
                       </p>
-                      <p className="mt-1 text-sm text-slate-500">
+                      <p className="mt-1 text-sm muted">
                         Added {formatDateTime(subscription.createdAt)}
                       </p>
                     </div>
@@ -284,9 +282,9 @@ function Panel({
   title: string;
 }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="card">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-slate-950">{title}</h2>
+        <h2 className="section-title">{title}</h2>
         {action}
       </div>
       {children}
@@ -296,8 +294,6 @@ function Panel({
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
-      {message}
-    </div>
+    <div className="empty-state">{message}</div>
   );
 }
