@@ -1,6 +1,6 @@
-import { createClient, type Client } from "@libsql/client";
+import type { Client } from "@libsql/client";
 
-let client: Client | undefined;
+let clientPromise: Promise<Client> | undefined;
 
 function getDatabaseUrl() {
   const url = process.env.TURSO_DATABASE_URL;
@@ -18,13 +18,26 @@ function getDatabaseUrl() {
   return "file:local.db";
 }
 
-export function getDb() {
-  if (!client) {
-    client = createClient({
-      url: getDatabaseUrl(),
-      authToken: process.env.TURSO_AUTH_TOKEN || undefined,
-    });
+export async function getDb() {
+  if (!clientPromise) {
+    clientPromise = createDbClient();
   }
 
-  return client;
+  return clientPromise;
+}
+
+async function createDbClient() {
+  const url = getDatabaseUrl();
+  const config = {
+    url,
+    authToken: process.env.TURSO_AUTH_TOKEN || undefined,
+  };
+
+  if (url.startsWith("file:")) {
+    const { createClient } = await import("@libsql/client");
+    return createClient(config);
+  }
+
+  const { createClient } = await import("@libsql/client/web");
+  return createClient(config);
 }

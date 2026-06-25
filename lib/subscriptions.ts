@@ -45,7 +45,8 @@ export async function getSubscriptions(filters: SubscriptionFilters = {}) {
   }
 
   const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
-  const result = await getDb().execute({
+  const db = await getDb();
+  const result = await db.execute({
     sql: `SELECT * FROM subscriptions ${where} ORDER BY date(next_billing_date) ASC, name ASC`,
     args,
   });
@@ -54,7 +55,8 @@ export async function getSubscriptions(filters: SubscriptionFilters = {}) {
 }
 
 export async function getAllSubscriptions() {
-  const result = await getDb().execute(
+  const db = await getDb();
+  const result = await db.execute(
     "SELECT * FROM subscriptions ORDER BY date(next_billing_date) ASC, name ASC",
   );
 
@@ -62,7 +64,8 @@ export async function getAllSubscriptions() {
 }
 
 export async function getSubscriptionById(id: string) {
-  const result = await getDb().execute({
+  const db = await getDb();
+  const result = await db.execute({
     sql: "SELECT * FROM subscriptions WHERE id = ? LIMIT 1",
     args: [id],
   });
@@ -72,7 +75,8 @@ export async function getSubscriptionById(id: string) {
 }
 
 export async function getCategories() {
-  const result = await getDb().execute(
+  const db = await getDb();
+  const result = await db.execute(
     "SELECT DISTINCT category FROM subscriptions ORDER BY category ASC",
   );
 
@@ -83,7 +87,8 @@ export async function createSubscription(input: SubscriptionInput) {
   const now = new Date().toISOString();
   const id = crypto.randomUUID();
 
-  await getDb().execute({
+  const db = await getDb();
+  await db.execute({
     sql: `
       INSERT INTO subscriptions (
         id, name, description, category, price, currency, billing_cycle,
@@ -115,7 +120,8 @@ export async function createSubscription(input: SubscriptionInput) {
 }
 
 export async function updateSubscription(id: string, input: SubscriptionInput) {
-  await getDb().execute({
+  const db = await getDb();
+  await db.execute({
     sql: `
       UPDATE subscriptions
       SET
@@ -154,7 +160,8 @@ export async function updateSubscription(id: string, input: SubscriptionInput) {
 }
 
 export async function deleteSubscription(id: string) {
-  await getDb().execute({
+  const db = await getDb();
+  await db.execute({
     sql: "DELETE FROM subscriptions WHERE id = ?",
     args: [id],
   });
