@@ -20,15 +20,28 @@ export async function applySchema() {
     .split(";")
     .map((statement) => statement.trim())
     .filter(Boolean);
+  const deferredStatements = statements.filter((statement) =>
+    statement.includes("idx_subscriptions_priority"),
+  );
+  const baseStatements = statements.filter(
+    (statement) => !statement.includes("idx_subscriptions_priority"),
+  );
 
-  if (statements.length) {
+  if (baseStatements.length) {
     await db.batch(
-      statements.map((sql) => ({ sql, args: [] })),
+      baseStatements.map((sql) => ({ sql, args: [] })),
       "write",
     );
   }
 
   await ensureSubscriptionColumns();
+
+  if (deferredStatements.length) {
+    await db.batch(
+      deferredStatements.map((sql) => ({ sql, args: [] })),
+      "write",
+    );
+  }
 
   return statements.length;
 }

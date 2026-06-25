@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CreditCard, LayoutDashboard, LogOut, Plus, WalletCards } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -30,6 +31,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Plus aria-hidden="true" className="h-4 w-4" />
               Add
             </Link>
+            <ThemeToggle />
             <form action={logoutAction}>
               <button className="nav-link" type="submit">
                 <LogOut aria-hidden="true" className="h-4 w-4" />

@@ -42,10 +42,6 @@ export default async function DashboardPage() {
     getIncomeSources(),
   ]);
   const currency = getPrimaryCurrency(subscriptions, incomeSources);
-  const activeSubscriptions = subscriptions.filter(
-    (subscription) =>
-      subscription.status === "active" && subscription.currency === currency,
-  );
   const renewals7Days = getUpcomingRenewals(subscriptions, 7);
   const renewals30Days = getUpcomingRenewals(subscriptions, 30);
   const monthlyCost = getMonthlySubscriptionTotal(subscriptions, currency);
