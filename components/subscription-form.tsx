@@ -151,6 +151,20 @@ export function SubscriptionForm({
           />
         </Field>
 
+        <Field
+          error={state.fieldErrors?.lastBilledDate?.[0]}
+          id="lastBilledDate"
+          label="Last billed date"
+        >
+          <input
+            className="form-input"
+            defaultValue={value("lastBilledDate", subscription?.lastBilledDate)}
+            id="lastBilledDate"
+            name="lastBilledDate"
+            type="date"
+          />
+        </Field>
+
         <Field error={state.fieldErrors?.status?.[0]} id="status" label="Status">
           <select
             className="form-input"
@@ -164,6 +178,18 @@ export function SubscriptionForm({
               </option>
             ))}
           </select>
+        </Field>
+
+        <Field error={state.fieldErrors?.priority?.[0]} id="priority" label="Priority">
+          <input
+            className="form-input"
+            defaultValue={value("priority", subscription?.priority ?? 0)}
+            id="priority"
+            min="0"
+            name="priority"
+            step="1"
+            type="number"
+          />
         </Field>
 
         <Field
@@ -194,7 +220,49 @@ export function SubscriptionForm({
             type="url"
           />
         </Field>
+
+        <Field
+          error={state.fieldErrors?.trialStartDate?.[0]}
+          id="trialStartDate"
+          label="Trial start date"
+        >
+          <input
+            className="form-input"
+            defaultValue={value("trialStartDate", subscription?.trialStartDate)}
+            id="trialStartDate"
+            name="trialStartDate"
+            type="date"
+          />
+        </Field>
+
+        <Field
+          error={state.fieldErrors?.trialEndDate?.[0]}
+          id="trialEndDate"
+          label="Trial end date"
+        >
+          <input
+            className="form-input"
+            defaultValue={value("trialEndDate", subscription?.trialEndDate)}
+            id="trialEndDate"
+            name="trialEndDate"
+            type="date"
+          />
+        </Field>
       </div>
+
+      <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm font-medium text-slate-700">
+        <input
+          className="h-4 w-4 rounded border-slate-300 text-slate-950"
+          defaultChecked={
+            state.values?.isUnused
+              ? state.values.isUnused === "on" || state.values.isUnused === "true"
+              : subscription?.isUnused ?? false
+          }
+          name="isUnused"
+          type="checkbox"
+        />
+        Flag as unused
+      </label>
 
       <Field
         error={state.fieldErrors?.description?.[0]}

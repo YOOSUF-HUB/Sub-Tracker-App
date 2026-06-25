@@ -1,4 +1,4 @@
-import type { BillingCycle, SubscriptionStatus } from "@/lib/types";
+import type { BillingCycle, IncomeSourceType, SubscriptionStatus } from "@/lib/types";
 
 export function formatCurrency(amount: number, currency: string) {
   try {
@@ -38,6 +38,18 @@ export function humanizeBillingCycle(cycle: BillingCycle, customIntervalDays?: n
 
 export function humanizeStatus(status: SubscriptionStatus) {
   return status.charAt(0).toUpperCase() + status.slice(1);
+}
+
+export function humanizeIncomeType(type: IncomeSourceType) {
+  if (type === "passive") {
+    return "Passive income";
+  }
+
+  return type.charAt(0).toUpperCase() + type.slice(1);
+}
+
+export function formatPercent(value: number) {
+  return `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
 }
 
 export function toDateInputValue(date: string | null | undefined) {

@@ -2,10 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createSubscription, deleteSubscription, updateSubscription } from "@/lib/subscriptions";
+import {
+  bulkDeleteSubscriptions,
+  bulkUpdateSubscriptions,
+  createSubscription,
+  deleteSubscription,
+  updateSubscription,
+  updateSubscriptionPriorities,
+  updateSubscriptionQuick,
+} from "@/lib/subscriptions";
 import { requireAuth } from "@/lib/auth";
-import { formDataToObject, subscriptionSchema } from "@/lib/validation";
-import type { SubscriptionInput } from "@/lib/types";
+import {
+  bulkSubscriptionSchema,
+  formDataToObject,
+  quickSubscriptionSchema,
+  subscriptionSchema,
+} from "@/lib/validation";
+import type { BulkSubscriptionUpdate, QuickSubscriptionInput, SubscriptionInput } from "@/lib/types";
 
 export type SubscriptionFormState = {
   message?: string;
@@ -75,6 +88,83 @@ export async function deleteSubscriptionAction(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/subscriptions");
   redirect("/subscriptions");
+}
+
+export async function quickUpdateSubscriptionAction(
+  id: string,
+  formData: FormData,
+) {
+  await requireAuth();
+
+  const parsed = quickSubscriptionSchema.safeParse(formDataToObject(formData));
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      message:
+        Object.values(parsed.error.flatten().fieldErrors).flat()[0] ??
+        "Please fix the highlighted fields.",
+    };
+  }
+
+  await updateSubscriptionQuick(id, parsed.data satisfies QuickSubscriptionInput);
+
+  revalidatePath("/dashboard");
+  revalidatePath("/subscriptions");
+  revalidatePath(`/subscriptions/${id}`);
+
+  return { ok: true, message: "Saved." };
+}
+
+export async function bulkDeleteSubscriptionsAction(ids: string[]) {
+  await requireAuth();
+
+  await bulkDeleteSubscriptions(ids);
+
+  revalidatePath("/dashboard");
+  revalidatePath("/subscriptions");
+
+  return { ok: true };
+}
+
+export async function bulkUpdateSubscriptionsAction(
+  ids: string[],
+  updates: BulkSubscriptionUpdate,
+) {
+  await requireAuth();
+
+  const parsed = bulkSubscriptionSchema.safeParse({
+    ids,
+    ...updates,
+  });
+
+  if (!parsed.success) {
+    return { ok: false, message: "Choose subscriptions and a valid bulk edit." };
+  }
+
+  await bulkUpdateSubscriptions(parsed.data.ids, {
+    status: parsed.data.status,
+    category: parsed.data.category || undefined,
+    isUnused: parsed.data.isUnused,
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/subscriptions");
+
+  return { ok: true };
+}
+
+export async function updateSubscriptionPrioritiesAction(
+  priorities: Array<{ id: string; priority: number }>,
+) {
+  await requireAuth();
+
+  await updateSubscriptionPriorities(priorities);
+
+  revalidatePath("/dashboard");
+  revalidatePath("/subscriptions");
+
+  return { ok: true };
 }
 
 function formValues(formData: FormData) {
