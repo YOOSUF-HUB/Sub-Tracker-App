@@ -41,8 +41,8 @@ export default async function SubscriptionDetailsPage({
   const daysTone = daysRemaining < 0 ? "red" : daysRemaining <= 7 ? "amber" : "blue";
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="page-stack">
+      <div className="page-header">
         <Link className="btn-secondary w-fit" href="/subscriptions">
           <ChevronLeft aria-hidden="true" className="h-4 w-4" />
           Back
@@ -59,7 +59,7 @@ export default async function SubscriptionDetailsPage({
         </div>
       </div>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section className="card sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -72,11 +72,11 @@ export default async function SubscriptionDetailsPage({
                   : `${daysRemaining} days remaining`}
               </Badge>
             </div>
-            <h1 className="break-words text-3xl font-semibold text-slate-950">
+            <h1 className="break-words text-3xl font-semibold text-strong">
               {subscription.name}
             </h1>
             {subscription.description ? (
-              <p className="mt-2 max-w-2xl text-slate-600">
+              <p className="mt-2 max-w-2xl text-slate-600 dark:text-slate-300">
                 {subscription.description}
               </p>
             ) : null}
@@ -126,8 +126,8 @@ export default async function SubscriptionDetailsPage({
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[1fr_0.8fr]">
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-950">Details</h2>
+        <div className="card">
+          <h2 className="section-title">Details</h2>
           <dl className="mt-5 grid gap-4 sm:grid-cols-2">
             <Detail label="Category" value={subscription.category} />
             <Detail
@@ -188,14 +188,14 @@ export default async function SubscriptionDetailsPage({
           </dl>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-950">Notes</h2>
+        <div className="card">
+          <h2 className="section-title">Notes</h2>
           {subscription.notes ? (
-            <p className="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">
+            <p className="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600 dark:text-slate-300">
               {subscription.notes}
             </p>
           ) : (
-            <p className="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+            <p className="empty-state mt-4">
               No notes saved for this subscription.
             </p>
           )}
@@ -208,8 +208,8 @@ export default async function SubscriptionDetailsPage({
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-sm font-medium text-slate-500">{label}</dt>
-      <dd className="mt-1 break-words text-sm text-slate-950">{value}</dd>
+      <dt className="text-sm font-medium muted">{label}</dt>
+      <dd className="mt-1 break-words text-sm text-strong">{value}</dd>
     </div>
   );
 }

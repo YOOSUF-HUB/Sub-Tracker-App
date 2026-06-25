@@ -37,7 +37,7 @@ export function SubscriptionForm({
   return (
     <form action={formAction} className="space-y-6">
       {state.message ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 transition-colors duration-200 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
           {state.message}
         </div>
       ) : null}
@@ -250,9 +250,9 @@ export function SubscriptionForm({
         </Field>
       </div>
 
-      <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm font-medium text-slate-700">
+      <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-medium text-slate-700 transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-200">
         <input
-          className="h-4 w-4 rounded border-slate-300 text-slate-950"
+          className="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500 dark:border-slate-700 dark:bg-slate-950"
           defaultChecked={
             state.values?.isUnused
               ? state.values.isUnused === "on" || state.values.isUnused === "true"

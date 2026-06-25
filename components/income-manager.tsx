@@ -61,7 +61,7 @@ export function IncomeManager({
         </p>
       ) : null}
 
-      <div className="mt-5 divide-y divide-slate-100">
+      <div className="mt-5 divide-y divide-slate-100 dark:divide-slate-800">
         {incomeSources.length ? (
           incomeSources.map((source) => (
             <form

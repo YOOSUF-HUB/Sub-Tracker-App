@@ -292,7 +292,7 @@ export function SubscriptionManager({
             Bulk delete
           </button>
         </div>
-        {notice ? <p className="mt-3 text-sm text-slate-500">{notice}</p> : null}
+        {notice ? <p className="mt-3 text-sm muted">{notice}</p> : null}
       </section>
 
       <section className="table-shell">
@@ -303,6 +303,7 @@ export function SubscriptionManager({
                 <tr>
                   <th className="px-3 py-3">
                     <input
+                      aria-label="Select visible subscriptions"
                       checked={
                         filteredRows.length > 0 &&
                         filteredRows.every((subscription) =>
@@ -386,6 +387,7 @@ function QuickEditRow({
     >
       <td className="px-3 py-3">
         <input
+          aria-label={`Select ${subscription.name}`}
           checked={isSelected}
           onChange={() => onToggleSelected(subscription.id)}
           type="checkbox"

@@ -178,7 +178,7 @@ export default async function DashboardPage() {
           title="Unused reminders"
         >
           {unusedSubscriptions.length ? (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
               {unusedSubscriptions.map((subscription) => (
                 <Link
                   className="row-link flex items-center justify-between gap-4 px-2 py-4"
@@ -210,7 +210,7 @@ export default async function DashboardPage() {
           title="Upcoming renewals"
         >
           {renewals30Days.length ? (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
               {renewals30Days.slice(0, 8).map((subscription) => (
                 <Link
                   className="row-link flex items-center justify-between gap-4 px-2 py-4"

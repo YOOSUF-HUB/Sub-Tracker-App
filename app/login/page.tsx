@@ -9,17 +9,17 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-slate-50 px-4 py-10">
+    <main className="grid min-h-screen place-items-center bg-slate-50 px-4 py-10 transition-colors duration-200 dark:bg-slate-950">
       <div className="absolute right-4 top-4">
         <ThemeToggle />
       </div>
-      <section className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
+      <section className="card w-full max-w-md p-8">
         <div className="space-y-2">
-          <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
+          <p className="eyebrow uppercase tracking-wide">
             Personal access
           </p>
-          <h1 className="text-2xl font-semibold text-slate-950">Sign in</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-strong">Sign in</h1>
+          <p className="text-sm muted">
             Use your private app password to open the dashboard.
           </p>
         </div>

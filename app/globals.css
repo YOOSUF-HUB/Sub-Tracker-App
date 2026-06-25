@@ -140,4 +140,8 @@
   .text-strong {
     @apply text-slate-950 dark:text-slate-50;
   }
+
+  input[type="checkbox"] {
+    @apply rounded border-slate-300 text-teal-600 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-white dark:border-slate-700 dark:bg-slate-950 dark:focus:ring-offset-slate-950;
+  }
 }

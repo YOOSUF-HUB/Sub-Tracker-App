@@ -33,7 +33,7 @@ export function StatCard({
             {value}
           </p>
         </div>
-        <div className={cn("rounded-md p-2", tones[tone])}>
+        <div className={cn("rounded-lg p-2", tones[tone])}>
           <Icon aria-hidden="true" className="h-5 w-5" />
         </div>
       </div>
