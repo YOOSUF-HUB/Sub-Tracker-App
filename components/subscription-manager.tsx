@@ -331,7 +331,7 @@ export function SubscriptionManager({
                     draggedId={draggedId}
                     isPending={isPending}
                     isSelected={selectedIds.includes(subscription.id)}
-                    key={subscription.id}
+                    key={`${subscription.id}-${subscription.status}-${subscription.price}-${subscription.nextBillingDate}-${subscription.priority}-${subscription.isUnused}`}
                     onDragStart={setDraggedId}
                     onDrop={dropOn}
                     onSave={saveQuickEdit}

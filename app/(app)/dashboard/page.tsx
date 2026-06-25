@@ -1,29 +1,63 @@
 import Link from "next/link";
 import {
+  AlertTriangle,
+  Banknote,
   CalendarClock,
   CreditCard,
+  Flame,
   Plus,
   TrendingUp,
   Wallet,
 } from "lucide-react";
+import { AnalyticsCharts } from "@/components/analytics-charts";
 import { Badge, StatusBadge } from "@/components/badge";
+import { IncomeManager } from "@/components/income-manager";
 import { StatCard } from "@/components/stat-card";
 import {
-  getMonthlyCost,
+  compareCurrentMonthToLast,
+  getInflationSummary,
+  getMonthlyCostTrend,
+  getMonthlySubscriptionTotal,
+  getNetBurnRate,
+  getPrimaryCurrency,
+  getProjectedYearlySpendGrowth,
+  getSpendByCategory,
+  getTopExpensiveSubscriptions,
   getUpcomingRenewals,
-  getYearlyCost,
+  getUnusedSubscriptions,
+  getYearlySubscriptionTotal,
 } from "@/lib/calculations";
-import { formatCurrency, formatDate, formatDateTime } from "@/lib/format";
+import {
+  formatCurrency,
+  formatDate,
+  formatDateTime,
+  formatPercent,
+} from "@/lib/format";
+import { getIncomeSources } from "@/lib/income";
 import { getAllSubscriptions } from "@/lib/subscriptions";
-import type { Subscription } from "@/lib/types";
 
 export default async function DashboardPage() {
-  const subscriptions = await getAllSubscriptions();
+  const [subscriptions, incomeSources] = await Promise.all([
+    getAllSubscriptions(),
+    getIncomeSources(),
+  ]);
+  const currency = getPrimaryCurrency(subscriptions, incomeSources);
   const activeSubscriptions = subscriptions.filter(
-    (subscription) => subscription.status === "active",
+    (subscription) =>
+      subscription.status === "active" && subscription.currency === currency,
   );
   const renewals7Days = getUpcomingRenewals(subscriptions, 7);
   const renewals30Days = getUpcomingRenewals(subscriptions, 30);
+  const monthlyCost = getMonthlySubscriptionTotal(subscriptions, currency);
+  const yearlyCost = getYearlySubscriptionTotal(subscriptions, currency);
+  const netBurn = getNetBurnRate(subscriptions, incomeSources, currency);
+  const spendComparison = compareCurrentMonthToLast(subscriptions, currency);
+  const growth = getProjectedYearlySpendGrowth(subscriptions, currency);
+  const inflation = getInflationSummary(subscriptions, currency);
+  const categorySpend = getSpendByCategory(subscriptions, currency);
+  const monthlyTrend = getMonthlyCostTrend(subscriptions, currency, 6);
+  const topExpensive = getTopExpensiveSubscriptions(subscriptions, currency, 5);
+  const unusedSubscriptions = getUnusedSubscriptions(subscriptions);
   const recentlyAdded = [...subscriptions]
     .sort(
       (a, b) =>
@@ -48,25 +82,25 @@ export default async function DashboardPage() {
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          helper="Estimated from active subscriptions"
+          helper="Active subscriptions"
           icon={Wallet}
           title="Monthly cost"
           tone="emerald"
-          value={formatTotals(activeSubscriptions, getMonthlyCost)}
+          value={formatCurrency(monthlyCost, currency)}
         />
         <StatCard
-          helper="Estimated from active subscriptions"
-          icon={TrendingUp}
-          title="Yearly cost"
+          helper="All monthly income sources"
+          icon={Banknote}
+          title="Monthly income"
           tone="sky"
-          value={formatTotals(activeSubscriptions, getYearlyCost)}
+          value={formatCurrency(netBurn.income, currency)}
         />
         <StatCard
-          helper="Currently billing or expected to bill"
-          icon={CreditCard}
-          title="Active subscriptions"
-          tone="slate"
-          value={String(activeSubscriptions.length)}
+          helper={netBurn.net >= 0 ? "Income left after subscriptions" : "Subscriptions exceed income"}
+          icon={Flame}
+          title="Net burn rate"
+          tone={netBurn.net >= 0 ? "slate" : "amber"}
+          value={formatCurrency(netBurn.net, currency)}
         />
         <StatCard
           helper={`${renewals7Days.length} within 7 days`}
@@ -75,6 +109,105 @@ export default async function DashboardPage() {
           tone="amber"
           value={String(renewals30Days.length)}
         />
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          helper="Estimated from active subscriptions"
+          icon={TrendingUp}
+          title="Yearly cost"
+          tone="sky"
+          value={formatCurrency(yearlyCost, currency)}
+        />
+        <StatCard
+          helper={formatPercent(spendComparison.percentage)}
+          icon={TrendingUp}
+          title="This month vs last"
+          tone={spendComparison.difference <= 0 ? "emerald" : "amber"}
+          value={formatCurrency(spendComparison.difference, currency)}
+        />
+        <StatCard
+          helper={formatPercent(growth.percentage)}
+          icon={CreditCard}
+          title="Yearly growth"
+          tone={growth.difference <= 0 ? "emerald" : "amber"}
+          value={formatCurrency(growth.difference, currency)}
+        />
+        <StatCard
+          helper={`${inflation.affectedCount} changed subscription(s)`}
+          icon={AlertTriangle}
+          title="Inflation view"
+          tone={inflation.difference <= 0 ? "slate" : "amber"}
+          value={formatCurrency(inflation.difference, currency)}
+        />
+      </section>
+
+      <AnalyticsCharts
+        currency={currency}
+        lineData={monthlyTrend}
+        pieData={categorySpend}
+      />
+
+      <IncomeManager currency={currency} incomeSources={incomeSources} />
+
+      <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+        <Panel title="Top 5 most expensive">
+          {topExpensive.length ? (
+            <div className="space-y-3">
+              {topExpensive.map((subscription, index) => (
+                <Link
+                  className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:bg-slate-50"
+                  href={`/subscriptions/${subscription.id}`}
+                  key={subscription.id}
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium text-slate-950">
+                      {index + 1}. {subscription.name}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {subscription.category}
+                    </p>
+                  </div>
+                  <p className="font-semibold text-slate-950">
+                    {formatCurrency(subscription.monthlyCost, currency)}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <EmptyState message="No active subscriptions in this currency yet." />
+          )}
+        </Panel>
+
+        <Panel
+          action={<Link className="btn-secondary" href="/subscriptions">Manage</Link>}
+          title="Unused reminders"
+        >
+          {unusedSubscriptions.length ? (
+            <div className="divide-y divide-slate-100">
+              {unusedSubscriptions.map((subscription) => (
+                <Link
+                  className="flex items-center justify-between gap-4 py-4 transition hover:bg-slate-50"
+                  href={`/subscriptions/${subscription.id}`}
+                  key={subscription.id}
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-slate-950">
+                      {subscription.name}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {formatCurrency(subscription.price, subscription.currency)} ·{" "}
+                      {subscription.category}
+                    </p>
+                  </div>
+                  <Badge tone="amber">Unused</Badge>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <EmptyState message="No subscriptions are currently flagged as unused." />
+          )}
+        </Panel>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -171,26 +304,4 @@ function EmptyState({ message }: { message: string }) {
       {message}
     </div>
   );
-}
-
-function formatTotals(
-  subscriptions: Subscription[],
-  calculator: (subscription: Subscription) => number,
-) {
-  if (!subscriptions.length) {
-    return "$0";
-  }
-
-  const totals = new Map<string, number>();
-
-  for (const subscription of subscriptions) {
-    totals.set(
-      subscription.currency,
-      (totals.get(subscription.currency) ?? 0) + calculator(subscription),
-    );
-  }
-
-  return [...totals.entries()]
-    .map(([currency, total]) => formatCurrency(total, currency))
-    .join(" + ");
 }

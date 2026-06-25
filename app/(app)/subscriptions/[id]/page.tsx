@@ -64,6 +64,8 @@ export default async function SubscriptionDetailsPage({
           <div className="min-w-0">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <StatusBadge status={subscription.status} />
+              {subscription.isUnused ? <Badge tone="amber">Unused</Badge> : null}
+              {subscription.trialEndDate ? <Badge tone="blue">Trial</Badge> : null}
               <Badge tone={daysTone}>
                 {daysRemaining < 0
                   ? `${Math.abs(daysRemaining)} days overdue`
@@ -145,8 +147,41 @@ export default async function SubscriptionDetailsPage({
               value={formatDate(subscription.nextBillingDate)}
             />
             <Detail
+              label="Last billed date"
+              value={
+                subscription.lastBilledDate
+                  ? formatDate(subscription.lastBilledDate)
+                  : "Not set"
+              }
+            />
+            <Detail
               label="Payment method"
               value={subscription.paymentMethod || "Not set"}
+            />
+            <Detail label="Priority" value={String(subscription.priority)} />
+            <Detail
+              label="Trial start"
+              value={
+                subscription.trialStartDate
+                  ? formatDate(subscription.trialStartDate)
+                  : "Not set"
+              }
+            />
+            <Detail
+              label="Trial end"
+              value={
+                subscription.trialEndDate
+                  ? formatDate(subscription.trialEndDate)
+                  : "Not set"
+              }
+            />
+            <Detail
+              label="Previous price"
+              value={
+                subscription.previousPrice
+                  ? formatCurrency(subscription.previousPrice, subscription.currency)
+                  : "Not tracked"
+              }
             />
             <Detail label="Created" value={formatDateTime(subscription.createdAt)} />
             <Detail label="Updated" value={formatDateTime(subscription.updatedAt)} />
