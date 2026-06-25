@@ -51,7 +51,7 @@ export async function getSubscriptions(filters: SubscriptionFilters = {}) {
     args,
   });
 
-  return result.rows.map((row) => mapSubscription(row as SubscriptionRow));
+  return result.rows.map((row) => mapSubscription(row as unknown as SubscriptionRow));
 }
 
 export async function getAllSubscriptions() {
@@ -60,7 +60,7 @@ export async function getAllSubscriptions() {
     "SELECT * FROM subscriptions ORDER BY date(next_billing_date) ASC, name ASC",
   );
 
-  return result.rows.map((row) => mapSubscription(row as SubscriptionRow));
+  return result.rows.map((row) => mapSubscription(row as unknown as SubscriptionRow));
 }
 
 export async function getSubscriptionById(id: string) {
@@ -71,7 +71,7 @@ export async function getSubscriptionById(id: string) {
   });
 
   const row = result.rows.at(0);
-  return row ? mapSubscription(row as SubscriptionRow) : null;
+  return row ? mapSubscription(row as unknown as SubscriptionRow) : null;
 }
 
 export async function getCategories() {
