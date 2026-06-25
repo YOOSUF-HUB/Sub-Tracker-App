@@ -17,10 +17,17 @@ A simple personal-use web app for tracking paid subscriptions, renewal dates, an
 - Single-user password login using `APP_PASSWORD`
 - Secure HTTP-only session cookie signed with `SESSION_SECRET`
 - Protected dashboard and subscription pages
-- Add, edit, view, search, filter, sort, and delete subscriptions
-- Active, paused, and cancelled subscription status
+- Add, edit, view, fuzzy search, filter, sort, and delete subscriptions
+- Inline quick edit from the subscriptions list
+- Bulk delete and bulk edit for status, category, and unused flags
+- Drag-and-sort priority subscriptions
+- Active, paused, and cancelled subscription status with pause/resume controls
+- Trial period fields, last billed date, and manual unused reminders
+- Monthly income sources for salary, freelance, passive, and other income
+- Dark mode and light mode toggle
 - Upcoming renewals within 7 and 30 days
 - Monthly and yearly spend estimates
+- Analytics dashboard with spending by category, monthly trend, top 5 expensive subscriptions, net burn rate, spend comparison, projected growth, and subscription inflation view
 - Local libSQL file for development, remote Turso database for production
 
 ## Install
@@ -62,7 +69,7 @@ Run the migration:
 npm run db:migrate
 ```
 
-Add sample subscriptions:
+Add sample subscriptions and income sources:
 
 ```bash
 npm run db:seed
@@ -75,6 +82,11 @@ The seed script creates:
 - GitHub Copilot
 - ChatGPT
 - Vercel
+- Main salary
+- Freelance projects
+- Passive income
+
+Run `npm run db:migrate` again after pulling new versions of the app. The migration script upgrades older databases by adding missing subscription lifecycle columns and creating the income table.
 
 ## Turso Setup
 
@@ -133,7 +145,7 @@ Open `http://localhost:3000`, sign in with `APP_PASSWORD`, and manage your subsc
    - `TURSO_AUTH_TOKEN`
    - `APP_PASSWORD`
    - `SESSION_SECRET`
-4. Run `npm run db:migrate` against the Turso database before using the production app.
+4. Run `npm run db:migrate` against the Turso database before using the production app and after schema changes.
 5. Deploy.
 
 The app automatically uses the Vercel-compatible `@libsql/client/web` entrypoint for remote Turso URLs and the normal local client for `file:` development databases.
