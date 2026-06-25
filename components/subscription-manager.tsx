@@ -213,13 +213,11 @@ export function SubscriptionManager({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="page-stack">
+      <div className="page-header">
         <div>
-          <p className="text-sm font-medium text-slate-500">Manage</p>
-          <h1 className="mt-1 text-3xl font-semibold text-slate-950">
-            Subscriptions
-          </h1>
+          <p className="eyebrow">Manage</p>
+          <h1 className="page-title">Subscriptions</h1>
         </div>
         <Link className="btn-primary justify-center" href="/subscriptions/new">
           <Plus aria-hidden="true" className="h-4 w-4" />
@@ -227,7 +225,7 @@ export function SubscriptionManager({
         </Link>
       </div>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="card">
         <div className="grid gap-3 md:grid-cols-[1.3fr_0.8fr_0.8fr_0.9fr]">
           <div className="relative">
             <Search
@@ -263,9 +261,9 @@ export function SubscriptionManager({
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="card">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <p className="text-sm font-medium text-slate-600">
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
             {selectedCount} selected
           </p>
           <select className="form-input lg:max-w-44" onChange={(event) => setBulkStatus(event.target.value as SubscriptionStatus | "")} value={bulkStatus}>
@@ -297,11 +295,11 @@ export function SubscriptionManager({
         {notice ? <p className="mt-3 text-sm text-slate-500">{notice}</p> : null}
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      <section className="table-shell">
         {filteredRows.length ? (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1120px] text-left text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className="table-head">
                 <tr>
                   <th className="px-3 py-3">
                     <input
@@ -325,7 +323,7 @@ export function SubscriptionManager({
                   <th className="px-3 py-3 text-right font-medium">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredRows.map((subscription) => (
                   <QuickEditRow
                     draggedId={draggedId}
@@ -345,8 +343,8 @@ export function SubscriptionManager({
           </div>
         ) : (
           <div className="p-8 text-center">
-            <p className="font-medium text-slate-950">No subscriptions found</p>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="font-medium text-strong">No subscriptions found</p>
+            <p className="mt-1 text-sm muted">
               Add a subscription or adjust your filters.
             </p>
           </div>
@@ -379,7 +377,7 @@ function QuickEditRow({
 }) {
   return (
     <tr
-      className="transition hover:bg-slate-50"
+      className="table-row"
       draggable
       onDragOver={(event) => event.preventDefault()}
       onDragStart={() => onDragStart(subscription.id)}
@@ -395,7 +393,7 @@ function QuickEditRow({
       </td>
       <td className="px-3 py-3">
         <div className="flex items-center gap-2">
-          <GripVertical aria-hidden="true" className="h-4 w-4 cursor-grab text-slate-400" />
+          <GripVertical aria-hidden="true" className="h-4 w-4 cursor-grab text-slate-400 dark:text-slate-500" />
           <input
             className="form-input h-9 w-20"
             defaultValue={subscription.priority}
@@ -414,7 +412,7 @@ function QuickEditRow({
           form={`quick-${subscription.id}`}
           name="name"
         />
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
           {humanizeBillingCycle(subscription.billingCycle, subscription.customIntervalDays)}
         </p>
       </td>
@@ -436,7 +434,7 @@ function QuickEditRow({
           step="0.01"
           type="number"
         />
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
           {formatCurrency(subscription.price, subscription.currency)}
         </p>
       </td>
@@ -448,7 +446,7 @@ function QuickEditRow({
           name="nextBillingDate"
           type="date"
         />
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
           {formatDate(subscription.nextBillingDate)}
         </p>
       </td>
@@ -468,7 +466,7 @@ function QuickEditRow({
         </div>
       </td>
       <td className="px-3 py-3">
-        <label className="flex items-center gap-2 text-xs text-slate-600">
+        <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
           <input
             defaultChecked={subscription.isUnused}
             form={`quick-${subscription.id}`}

@@ -26,10 +26,10 @@ export function IncomeManager({
   );
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="card">
       <div className="flex flex-col gap-1">
-        <h2 className="text-base font-semibold text-slate-950">Monthly income</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="section-title">Monthly income</h2>
+        <p className="text-sm muted">
           Total computed from salary, freelance, and passive income sources.
         </p>
       </div>
@@ -53,7 +53,7 @@ export function IncomeManager({
       </form>
 
       {state.message ? (
-        <p className="mt-3 text-sm text-slate-500">{state.message}</p>
+        <p className="mt-3 text-sm muted">{state.message}</p>
       ) : null}
       {state.fieldErrors ? (
         <p className="mt-3 text-sm text-red-600">
@@ -96,13 +96,11 @@ export function IncomeManager({
             </form>
           ))
         ) : (
-          <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
-            No income sources yet.
-          </div>
+          <div className="empty-state">No income sources yet.</div>
         )}
       </div>
 
-      <p className="mt-4 text-sm font-medium text-slate-950">
+      <p className="mt-4 text-sm font-medium text-strong">
         Visible total:{" "}
         {formatCurrency(
           incomeSources
