@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Link from "next/link";
 import { Save } from "lucide-react";
 import type { SubscriptionFormState } from "@/app/actions/subscriptions";
 import type { BillingCycle, Subscription, SubscriptionStatus } from "@/lib/types";
@@ -42,7 +43,7 @@ export function SubscriptionForm({
       ) : null}
 
       <div className="grid gap-5 md:grid-cols-2">
-        <Field error={state.fieldErrors?.name?.[0]} label="Name">
+        <Field error={state.fieldErrors?.name?.[0]} id="name" label="Name">
           <input
             className="form-input"
             defaultValue={value("name", subscription?.name)}
@@ -53,7 +54,7 @@ export function SubscriptionForm({
           />
         </Field>
 
-        <Field error={state.fieldErrors?.category?.[0]} label="Category">
+        <Field error={state.fieldErrors?.category?.[0]} id="category" label="Category">
           <input
             className="form-input"
             defaultValue={value("category", subscription?.category)}
@@ -70,7 +71,7 @@ export function SubscriptionForm({
           </datalist>
         </Field>
 
-        <Field error={state.fieldErrors?.price?.[0]} label="Price">
+        <Field error={state.fieldErrors?.price?.[0]} id="price" label="Price">
           <input
             className="form-input"
             defaultValue={value("price", subscription?.price)}
@@ -84,7 +85,7 @@ export function SubscriptionForm({
           />
         </Field>
 
-        <Field error={state.fieldErrors?.currency?.[0]} label="Currency">
+        <Field error={state.fieldErrors?.currency?.[0]} id="currency" label="Currency">
           <input
             className="form-input"
             defaultValue={value("currency", subscription?.currency ?? "USD")}
@@ -96,7 +97,11 @@ export function SubscriptionForm({
           />
         </Field>
 
-        <Field error={state.fieldErrors?.billingCycle?.[0]} label="Billing cycle">
+        <Field
+          error={state.fieldErrors?.billingCycle?.[0]}
+          id="billingCycle"
+          label="Billing cycle"
+        >
           <select
             className="form-input"
             defaultValue={value("billingCycle", subscription?.billingCycle ?? "monthly")}
@@ -115,6 +120,7 @@ export function SubscriptionForm({
         {billingCycle === "custom" ? (
           <Field
             error={state.fieldErrors?.customIntervalDays?.[0]}
+            id="customIntervalDays"
             label="Custom interval days"
           >
             <input
@@ -130,7 +136,11 @@ export function SubscriptionForm({
           </Field>
         ) : null}
 
-        <Field error={state.fieldErrors?.nextBillingDate?.[0]} label="Next billing date">
+        <Field
+          error={state.fieldErrors?.nextBillingDate?.[0]}
+          id="nextBillingDate"
+          label="Next billing date"
+        >
           <input
             className="form-input"
             defaultValue={value("nextBillingDate", subscription?.nextBillingDate)}
@@ -141,7 +151,7 @@ export function SubscriptionForm({
           />
         </Field>
 
-        <Field error={state.fieldErrors?.status?.[0]} label="Status">
+        <Field error={state.fieldErrors?.status?.[0]} id="status" label="Status">
           <select
             className="form-input"
             defaultValue={value("status", subscription?.status ?? "active")}
@@ -156,7 +166,11 @@ export function SubscriptionForm({
           </select>
         </Field>
 
-        <Field error={state.fieldErrors?.paymentMethod?.[0]} label="Payment method">
+        <Field
+          error={state.fieldErrors?.paymentMethod?.[0]}
+          id="paymentMethod"
+          label="Payment method"
+        >
           <input
             className="form-input"
             defaultValue={value("paymentMethod", subscription?.paymentMethod)}
@@ -166,7 +180,11 @@ export function SubscriptionForm({
           />
         </Field>
 
-        <Field error={state.fieldErrors?.websiteUrl?.[0]} label="Website URL">
+        <Field
+          error={state.fieldErrors?.websiteUrl?.[0]}
+          id="websiteUrl"
+          label="Website URL"
+        >
           <input
             className="form-input"
             defaultValue={value("websiteUrl", subscription?.websiteUrl)}
@@ -178,7 +196,11 @@ export function SubscriptionForm({
         </Field>
       </div>
 
-      <Field error={state.fieldErrors?.description?.[0]} label="Description">
+      <Field
+        error={state.fieldErrors?.description?.[0]}
+        id="description"
+        label="Description"
+      >
         <textarea
           className="form-textarea"
           defaultValue={value("description", subscription?.description)}
@@ -189,7 +211,7 @@ export function SubscriptionForm({
         />
       </Field>
 
-      <Field error={state.fieldErrors?.notes?.[0]} label="Notes">
+      <Field error={state.fieldErrors?.notes?.[0]} id="notes" label="Notes">
         <textarea
           className="form-textarea"
           defaultValue={value("notes", subscription?.notes)}
@@ -201,9 +223,9 @@ export function SubscriptionForm({
       </Field>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a className="btn-secondary justify-center" href="/subscriptions">
+        <Link className="btn-secondary justify-center" href="/subscriptions">
           Cancel
-        </a>
+        </Link>
         <button className="btn-primary justify-center" disabled={isPending} type="submit">
           <Save aria-hidden="true" className="h-4 w-4" />
           {isPending ? "Saving..." : submitLabel}
@@ -216,14 +238,14 @@ export function SubscriptionForm({
 function Field({
   children,
   error,
+  id,
   label,
 }: {
   children: React.ReactNode;
   error?: string;
+  id: string;
   label: string;
 }) {
-  const id = label.replace(/\s+/g, "-").toLowerCase();
-
   return (
     <div>
       <label className="form-label" htmlFor={id}>

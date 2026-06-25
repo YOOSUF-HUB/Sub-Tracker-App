@@ -32,7 +32,8 @@ export const subscriptionSchema = z
       .trim()
       .min(1, "Currency is required.")
       .max(8, "Use a short currency code.")
-      .transform((value) => value.toUpperCase()),
+      .transform((value) => value.toUpperCase())
+      .refine(isValidCurrency, "Enter a valid currency code."),
     billingCycle: z.enum(billingCycles),
     customIntervalDays: optionalPositiveInteger,
     nextBillingDate: z
@@ -71,14 +72,32 @@ function isValidDateInput(value: string) {
     return false;
   }
 
-  const date = new Date(`${value}T00:00:00`);
-  return !Number.isNaN(date.getTime()) && value === date.toISOString().slice(0, 10);
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+
+  return (
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+  );
 }
 
 function isValidUrl(value: string) {
   try {
     const url = new URL(value);
     return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function isValidCurrency(value: string) {
+  try {
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: value,
+    });
+    return true;
   } catch {
     return false;
   }

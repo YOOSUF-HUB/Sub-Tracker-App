@@ -89,10 +89,9 @@ async function seed() {
       notes: "Keep paused unless a paid project needs it.",
     },
   ];
+  const db = await getDb();
 
   for (const subscription of subscriptions) {
-    const db = await getDb();
-
     await db.execute({
       sql: `
         INSERT OR REPLACE INTO subscriptions (

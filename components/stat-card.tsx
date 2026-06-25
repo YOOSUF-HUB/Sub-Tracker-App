@@ -28,7 +28,9 @@ export function StatCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
+          <p className="mt-2 break-words text-2xl font-semibold text-slate-950">
+            {value}
+          </p>
         </div>
         <div className={cn("rounded-md p-2", tones[tone])}>
           <Icon aria-hidden="true" className="h-5 w-5" />

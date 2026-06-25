@@ -80,6 +80,10 @@ function signSession(payload: SessionPayload) {
 function verifySession(token: string) {
   const [body, signature] = token.split(".");
 
+  if (!process.env.SESSION_SECRET) {
+    return false;
+  }
+
   if (!body || !signature || !constantTimeEqual(signature, sign(body))) {
     return false;
   }
