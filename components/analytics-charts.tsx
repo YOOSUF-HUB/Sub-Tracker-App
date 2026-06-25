@@ -38,8 +38,8 @@ function ChartPanel({
   title: string;
 }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-base font-semibold text-slate-950">{title}</h2>
+    <section className="card">
+      <h2 className="section-title">{title}</h2>
       <div className="mt-5">{children}</div>
     </section>
   );
@@ -56,7 +56,7 @@ function PieChart({ currency, data }: { currency: string; data: ChartPoint[] }) 
   return (
     <div className="grid gap-5 sm:grid-cols-[180px_1fr] sm:items-center">
       <svg aria-label="Spending by category pie chart" className="h-44 w-44" viewBox="0 0 42 42">
-        <circle cx="21" cy="21" fill="transparent" r="15.915" stroke="#e2e8f0" strokeWidth="8" />
+        <circle className="stroke-slate-200 dark:stroke-slate-800" cx="21" cy="21" fill="transparent" r="15.915" strokeWidth="8" />
         {data.map((item, index) => {
           const percentage = (item.value / total) * 100;
           const dashArray = `${percentage} ${100 - percentage}`;
@@ -77,7 +77,7 @@ function PieChart({ currency, data }: { currency: string; data: ChartPoint[] }) 
           return segment;
         })}
         <text
-          className="fill-slate-950 text-[0.18rem] font-semibold"
+          className="fill-slate-950 text-[0.18rem] font-semibold dark:fill-slate-50"
           textAnchor="middle"
           x="21"
           y="20"
@@ -85,7 +85,7 @@ function PieChart({ currency, data }: { currency: string; data: ChartPoint[] }) 
           Total
         </text>
         <text
-          className="fill-slate-500 text-[0.16rem]"
+          className="fill-slate-500 text-[0.16rem] dark:fill-slate-400"
           textAnchor="middle"
           x="21"
           y="23"
@@ -101,9 +101,9 @@ function PieChart({ currency, data }: { currency: string; data: ChartPoint[] }) 
                 className="h-3 w-3 rounded-sm"
                 style={{ backgroundColor: chartColors[index % chartColors.length] }}
               />
-              <span className="truncate text-slate-600">{item.label}</span>
+              <span className="truncate text-slate-600 dark:text-slate-300">{item.label}</span>
             </div>
-            <span className="font-medium text-slate-950">
+            <span className="font-medium text-strong">
               {formatCurrency(item.value, currency)}
             </span>
           </div>
@@ -136,7 +136,7 @@ function LineChart({ currency, data }: { currency: string; data: ChartPoint[] })
     <div className="overflow-hidden">
       <svg aria-label="Monthly spending trend line chart" className="h-56 w-full" viewBox={`0 0 ${width} ${height}`}>
         <line
-          stroke="#e2e8f0"
+          className="stroke-slate-200 dark:stroke-slate-800"
           strokeWidth="1"
           x1={padding}
           x2={width - padding}
@@ -148,7 +148,7 @@ function LineChart({ currency, data }: { currency: string; data: ChartPoint[] })
           <g key={point.label}>
             <circle cx={point.x} cy={point.y} fill="#0f766e" r="4" />
             <text
-              className="fill-slate-500 text-[0.55rem]"
+              className="fill-slate-500 text-[0.55rem] dark:fill-slate-400"
               textAnchor="middle"
               x={point.x}
               y={height - 8}
@@ -157,7 +157,7 @@ function LineChart({ currency, data }: { currency: string; data: ChartPoint[] })
             </text>
           </g>
         ))}
-        <text className="fill-slate-500 text-[0.55rem]" x={padding} y={16}>
+        <text className="fill-slate-500 text-[0.55rem] dark:fill-slate-400" x={padding} y={16}>
           {formatCurrency(max, currency)}
         </text>
       </svg>
@@ -167,8 +167,6 @@ function LineChart({ currency, data }: { currency: string; data: ChartPoint[] })
 
 function EmptyChart({ message }: { message: string }) {
   return (
-    <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
-      {message}
-    </div>
+    <div className="empty-state">{message}</div>
   );
 }
