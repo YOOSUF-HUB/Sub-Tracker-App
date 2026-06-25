@@ -1,15 +1,18 @@
 import "./env";
-import { readFileSync } from "fs";
-import { join } from "path";
 import { getDb } from "../lib/db";
-import type { SubscriptionInput } from "../lib/types";
+import type { IncomeSourceInput, SubscriptionInput } from "../lib/types";
+import { applySchema } from "./schema";
 
 type SeedSubscription = SubscriptionInput & {
   id: string;
 };
 
+type SeedIncomeSource = IncomeSourceInput & {
+  id: string;
+};
+
 async function seed() {
-  await migrateSchema();
+  await applySchema();
 
   const now = new Date().toISOString();
   const subscriptions: SeedSubscription[] = [
@@ -23,8 +26,13 @@ async function seed() {
       billingCycle: "monthly",
       customIntervalDays: null,
       nextBillingDate: daysFromNow(5),
+      lastBilledDate: daysAgo(25),
       paymentMethod: "Visa",
       status: "active",
+      priority: 1,
+      isUnused: false,
+      trialStartDate: null,
+      trialEndDate: null,
       websiteUrl: "https://www.netflix.com",
       notes: "Review plan if prices change.",
     },
@@ -38,8 +46,13 @@ async function seed() {
       billingCycle: "monthly",
       customIntervalDays: null,
       nextBillingDate: daysFromNow(12),
+      lastBilledDate: daysAgo(18),
       paymentMethod: "Mastercard",
       status: "active",
+      priority: 2,
+      isUnused: false,
+      trialStartDate: null,
+      trialEndDate: null,
       websiteUrl: "https://www.spotify.com",
       notes: null,
     },
@@ -53,8 +66,13 @@ async function seed() {
       billingCycle: "monthly",
       customIntervalDays: null,
       nextBillingDate: daysFromNow(18),
+      lastBilledDate: daysAgo(12),
       paymentMethod: "Visa",
       status: "active",
+      priority: 3,
+      isUnused: false,
+      trialStartDate: null,
+      trialEndDate: null,
       websiteUrl: "https://github.com/features/copilot",
       notes: "Used for personal projects.",
     },
@@ -68,8 +86,13 @@ async function seed() {
       billingCycle: "monthly",
       customIntervalDays: null,
       nextBillingDate: daysFromNow(3),
+      lastBilledDate: daysAgo(27),
       paymentMethod: "Visa",
       status: "active",
+      priority: 4,
+      isUnused: false,
+      trialStartDate: null,
+      trialEndDate: null,
       websiteUrl: "https://chatgpt.com",
       notes: null,
     },
@@ -83,8 +106,13 @@ async function seed() {
       billingCycle: "monthly",
       customIntervalDays: null,
       nextBillingDate: daysFromNow(25),
+      lastBilledDate: daysAgo(5),
       paymentMethod: "Visa",
       status: "paused",
+      priority: 5,
+      isUnused: true,
+      trialStartDate: daysAgo(10),
+      trialEndDate: daysFromNow(20),
       websiteUrl: "https://vercel.com",
       notes: "Keep paused unless a paid project needs it.",
     },
@@ -96,10 +124,11 @@ async function seed() {
       sql: `
         INSERT OR REPLACE INTO subscriptions (
           id, name, description, category, price, currency, billing_cycle,
-          custom_interval_days, next_billing_date, payment_method, status,
-          website_url, notes, created_at, updated_at
+          custom_interval_days, next_billing_date, last_billed_date,
+          payment_method, status, priority, is_unused, trial_start_date,
+          trial_end_date, website_url, notes, created_at, updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       args: [
         subscription.id,
@@ -111,8 +140,13 @@ async function seed() {
         subscription.billingCycle,
         subscription.customIntervalDays,
         subscription.nextBillingDate,
+        subscription.lastBilledDate,
         subscription.paymentMethod,
         subscription.status,
+        subscription.priority,
+        subscription.isUnused ? 1 : 0,
+        subscription.trialStartDate,
+        subscription.trialEndDate,
         subscription.websiteUrl,
         subscription.notes,
         now,
@@ -121,28 +155,66 @@ async function seed() {
     });
   }
 
-  console.log(`Seeded ${subscriptions.length} subscriptions.`);
-}
+  const incomeSources: SeedIncomeSource[] = [
+    {
+      id: "seed-income-salary",
+      name: "Main salary",
+      type: "salary",
+      amount: 4200,
+      currency: "USD",
+      notes: "Monthly take-home estimate.",
+    },
+    {
+      id: "seed-income-freelance",
+      name: "Freelance projects",
+      type: "freelance",
+      amount: 650,
+      currency: "USD",
+      notes: "Average monthly freelance income.",
+    },
+    {
+      id: "seed-income-passive",
+      name: "Passive income",
+      type: "passive",
+      amount: 120,
+      currency: "USD",
+      notes: null,
+    },
+  ];
 
-async function migrateSchema() {
-  const schemaPath = join(process.cwd(), "db", "schema.sql");
-  const schema = readFileSync(schemaPath, "utf8");
-  const statements = schema
-    .split(";")
-    .map((statement) => statement.trim())
-    .filter(Boolean);
+  for (const income of incomeSources) {
+    await db.execute({
+      sql: `
+        INSERT OR REPLACE INTO income_sources (
+          id, name, type, amount, currency, notes, created_at, updated_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      args: [
+        income.id,
+        income.name,
+        income.type,
+        income.amount,
+        income.currency,
+        income.notes,
+        now,
+        now,
+      ],
+    });
+  }
 
-  const db = await getDb();
-
-  await db.batch(
-    statements.map((sql) => ({ sql, args: [] })),
-    "write",
-  );
+  console.log(`Seeded ${subscriptions.length} subscriptions and ${incomeSources.length} income sources.`);
 }
 
 function daysFromNow(days: number) {
   const date = new Date();
   date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function daysAgo(days: number) {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
   return date.toISOString().slice(0, 10);
 }
 
